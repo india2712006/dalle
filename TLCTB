@@ -1,57 +1,71 @@
+module traffic_light_tb;
 
-`timescale 1s / 1ms
+ 
+    reg clk;
+    reg rst;
+    reg farm_car;
 
-module traffic_light_controller_tb;
+   
+    wire r1;
+    wire y1;
+    wire g1;
 
-reg clk;
-reg reset;
-reg farm_car;
+    wire r2;
+    wire y2;
+    wire g2;
 
-wire R1;
-wire Y1;
-wire G1;
+    traffic_light uut (
+        .clk(clk),
+        .rst(rst),
+        .farm_car(farm_car),
 
-wire R2;
-wire Y2;
-wire G2;
+        .r1(r1),
+        .y1(y1),
+        .g1(g1),
 
-traffic_light_controller #(
-    .CLK_FREQ(1)
-) uut (
-    .clk(clk),
-    .reset(reset),
-    .farm_car(farm_car),
-    .R1(R1),
-    .Y1(Y1),
-    .G1(G1),
-    .R2(R2),
-    .Y2(Y2),
-    .G2(G2)
-);
+        .r2(r2),
+        .y2(y2),
+        .g2(g2)
+    );
 
-initial
-begin
-    clk = 0;
-    forever #0.5 clk = ~clk;
-end
 
-initial
-begin
-    reset = 1;
-    farm_car = 0;
+    always #5 clk = ~clk;
 
-    #2;
-    reset = 0;
+    initial begin
 
-    #10;
-    farm_car = 1;
+       
+        clk = 0;
+        rst = 1;
+        farm_car = 0;
 
-    #100;
-    farm_car = 0;
+        #20;
+        rst = 0;
 
-    #50;
+        #550;
 
-    $finish;
-end
+     
+        farm_car = 1;
+
+        #20;
+
+        farm_car = 0;
+
+        #550;
+
+ 
+        $finish;
+    end
+
+    initial begin
+        $monitor(
+            "Time=%0t | rst=%b farm_car=%b | state=%b | R1=%b Y1=%b G1=%b | R2=%b Y2=%b G2=%b",
+            $time,
+            rst,
+            farm_car,
+            uut.state,
+            r1, y1, g1,
+            r2, y2, g2
+        );
+    end
 
 endmodule
