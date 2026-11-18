@@ -1,0 +1,57 @@
+`timescale 1ns/1ps
+
+module tb_lift_controller;
+
+reg clk;
+reg reset;
+reg [1:0] request_floor;
+
+wire [1:0] Y;
+wire door;
+wire stop;
+wire up;
+wire down;
+
+lift_controller uut (
+    .clk(clk),
+    .reset(reset),
+    .request_floor(request_floor),
+    .Y(Y),
+    .door(door),
+    .stop(stop),
+    .up(up),
+    .down(down)
+);
+
+// Clock generation
+always #5 clk = ~clk;
+
+// Test sequence
+initial begin
+    clk = 0;
+    reset = 1;
+    request_floor = 0;
+
+    #10;
+    reset = 0;
+
+    // Request floor 3
+    #10 request_floor = 3;
+
+    // Request floor 1
+    #50 request_floor = 1;
+
+    // Request ground floor
+    #30 request_floor = 0;
+
+    #30;
+    $finish;
+end
+
+// Display output
+initial begin
+    $monitor("Time=%0t Reset=%b Request=%d Y=%d Stop=%b Up=%b Down=%b Door=%b",
+             $time, reset, request_floor, Y, stop, up, down, door);
+end
+
+endmodule
