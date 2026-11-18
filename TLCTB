@@ -1,0 +1,57 @@
+
+`timescale 1s / 1ms
+
+module traffic_light_controller_tb;
+
+reg clk;
+reg reset;
+reg farm_car;
+
+wire R1;
+wire Y1;
+wire G1;
+
+wire R2;
+wire Y2;
+wire G2;
+
+traffic_light_controller #(
+    .CLK_FREQ(1)
+) uut (
+    .clk(clk),
+    .reset(reset),
+    .farm_car(farm_car),
+    .R1(R1),
+    .Y1(Y1),
+    .G1(G1),
+    .R2(R2),
+    .Y2(Y2),
+    .G2(G2)
+);
+
+initial
+begin
+    clk = 0;
+    forever #0.5 clk = ~clk;
+end
+
+initial
+begin
+    reset = 1;
+    farm_car = 0;
+
+    #2;
+    reset = 0;
+
+    #10;
+    farm_car = 1;
+
+    #100;
+    farm_car = 0;
+
+    #50;
+
+    $finish;
+end
+
+endmodule
