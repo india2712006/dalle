@@ -1,0 +1,76 @@
+
+module full_adder_behavioral(
+    input A, B, Cin,
+    output reg Sum, Cout
+);
+
+always @(*)
+begin
+    if (A == 0 && B == 0 && Cin == 0)
+    begin
+        Sum = 0;
+        Cout = 0;
+    end
+    else if (A == 0 && B == 0 && Cin == 1)
+    begin
+        Sum = 1;
+        Cout = 0;
+    end
+    else if (A == 0 && B == 1 && Cin == 0)
+    begin
+        Sum = 1;
+        Cout = 0;
+    end
+    else if (A == 0 && B == 1 && Cin == 1)
+    begin
+        Sum = 0;
+        Cout = 1;
+    end
+    else if (A == 1 && B == 0 && Cin == 0)
+    begin
+        Sum = 1;
+        Cout = 0;
+    end
+    else if (A == 1 && B == 0 && Cin == 1)
+    begin
+        Sum = 0;
+        Cout = 1;
+    end
+    else if (A == 1 && B == 1 && Cin == 0)
+    begin
+        Sum = 0;
+        Cout = 1;
+    end
+    else
+    begin
+        Sum = 1;
+        Cout = 1;
+    end
+end
+
+endmodule
+
+
+
+
+
+.
+
+
+
+
+
+
+
+module full_adder_behavioral(
+    input A, B, Cin,
+    output reg Sum, Cout
+);
+
+always @(*)
+begin
+    Sum = A ^ B ^ Cin;
+    Cout = (A & B) | (B & Cin) | (A & Cin);
+end
+
+endmodule
