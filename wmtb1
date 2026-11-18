@@ -1,0 +1,91 @@
+module washing_machine_controller_tb;
+
+reg clk;
+reg reset;
+reg start;
+reg d_wash;
+
+wire soak;
+wire wash;
+wire rinse;
+wire spin;
+wire done;
+
+// Instantiate the controller
+washing_machine_controller #(
+    .CLK_FREQ(4),
+    .SOAK_TIME(1),
+    .WASH_TIME(2),
+    .RINSE_TIME(1),
+    .SPIN_TIME(3)
+) uut (
+    .clk(clk),
+    .reset(reset),
+    .start(start),
+    .d_wash(d_wash),
+    .soak(soak),
+    .wash(wash),
+    .rinse(rinse),
+    .spin(spin),
+    .done(done)
+);
+
+// Clock generation: 10 ns period
+always #5 clk = ~clk;
+
+// Display outputs
+initial begin
+    $monitor(
+        "Time=%0t | Start=%b | Soak=%b Wash=%b Rinse=%b Spin=%b Done=%b",
+        $time, start, soak, wash, rinse, spin, done
+    );
+end
+
+initial begin
+    clk = 0;
+    reset = 1;
+    start = 0;
+    d_wash = 0;
+
+    // Apply reset
+    repeat (2) @(negedge clk);
+    reset = 0;
+
+    // TEST 1: Normal washing cycle
+    $display("TEST 1: NORMAL WASHING CYCLE");
+
+    @(negedge clk);
+    start = 1;
+
+    @(negedge clk);
+    start = 0;
+
+    wait(done == 1);
+    $display("PASS: Normal washing cycle completed.");
+
+    // Reset before the next test
+    repeat (2) @(negedge clk);
+    reset = 1;
+
+    @(negedge clk);
+    reset = 0;
+    d_wash = 1;
+
+    // TEST 2: Double-wash cycle
+    $display("TEST 2: DOUBLE-WASH CYCLE");
+
+    @(negedge clk);
+    start = 1;
+
+    @(negedge clk);
+    start = 0;
+
+    wait(done == 1);
+    $display("PASS: Double-wash cycle completed.");
+
+    #20;
+    $display("ALL TESTS COMPLETED.");
+    $finish;
+end
+
+endmodule
