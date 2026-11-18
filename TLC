@@ -1,0 +1,134 @@
+
+module traffic_light_controller #(
+    parameter CLK_FREQ = 50000000
+)(
+    input clk,
+    input reset,
+    input farm_car,
+
+    output reg R1,
+    output reg Y1,
+    output reg G1,
+
+    output reg R2,
+    output reg Y2,
+    output reg G2
+);
+
+reg [1:0] state;
+reg [31:0] count;
+
+parameter S0 = 2'b00;
+parameter S1 = 2'b01;
+parameter S2 = 2'b10;
+parameter S3 = 2'b11;
+
+always @(posedge clk or posedge reset)
+begin
+    if (reset)
+    begin
+        state <= S0;
+        count <= 0;
+    end
+    else
+    begin
+        case(state)
+
+            S0:
+            begin
+                if (count < (32*CLK_FREQ-1))
+                    count <= count + 1;
+                else
+                begin
+                    count <= 0;
+
+                    if (farm_car)
+                        state <= S1;
+                    else
+                        state <= S0;
+                end
+            end
+
+            S1:
+            begin
+                if (count < (4*CLK_FREQ-1))
+                    count <= count + 1;
+                else
+                begin
+                    count <= 0;
+                    state <= S2;
+                end
+            end
+
+            S2:
+            begin
+                if (count < (32*CLK_FREQ-1))
+                    count <= count + 1;
+                else
+                begin
+                    count <= 0;
+                    state <= S3;
+                end
+            end
+
+            S3:
+            begin
+                if (count < (4*CLK_FREQ-1))
+                    count <= count + 1;
+                else
+                begin
+                    count <= 0;
+                    state <= S0;
+                end
+            end
+
+            default:
+            begin
+                state <= S0;
+                count <= 0;
+            end
+
+        endcase
+    end
+end
+
+always @(*)
+begin
+    R1 = 0;
+    Y1 = 0;
+    G1 = 0;
+
+    R2 = 0;
+    Y2 = 0;
+    G2 = 0;
+
+    case(state)
+
+        S0:
+        begin
+            G1 = 1;
+            R2 = 1;
+        end
+
+        S1:
+        begin
+            Y1 = 1;
+            R2 = 1;
+        end
+
+        S2:
+        begin
+            R1 = 1;
+            G2 = 1;
+        end
+
+        S3:
+        begin
+            R1 = 1;
+            Y2 = 1;
+        end
+
+    endcase
+end
+
+endmodule
